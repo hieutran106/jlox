@@ -1,13 +1,37 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.example.TokenType.*;
 
 class Scanner {
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
+    private static final Map<String, TokenType> keywords;
+
+    static {
+        keywords = new HashMap<String, TokenType>();
+        keywords.put("and", AND);
+        keywords.put("class", CLASS);
+        keywords.put("else", ELSE);
+        keywords.put("false", FALSE);
+        keywords.put("fun", FUN);
+        keywords.put("for", FOR);
+        keywords.put("if", IF);
+        keywords.put("nil", NIL);
+        keywords.put("or", OR);
+        keywords.put("print", PRINT);
+        keywords.put("return", RETURN);
+        keywords.put("super", SUPER);
+        keywords.put("this", THIS);
+        keywords.put("true", TRUE);
+        keywords.put("var", VAR);
+        keywords.put("while", WHILE);
+    }
+
 
     // Variables to keep track of where the scanner is in the source code
     private int start = 0;
@@ -103,12 +127,29 @@ class Scanner {
             default:
                 if (isDigit(c)) {
                     number();
+                } else if (isAlpha(c)) {
+                    identifier();
                 } else {
                     Lox.error(line, "Unexpected character.");
                 }
                 break;
 
         }
+    }
+
+    private void identifier() {
+        while (isAlpha(peek())) {
+            advance();
+        }
+
+        String lexeme = source.substring(start, current);
+        if (keywords.containsKey(lexeme)) {
+            addToken(keywords.get(lexeme));
+            return;
+        }
+
+        addToken(IDENTIFIER);
+
     }
 
     private void number() {
@@ -179,6 +220,12 @@ class Scanner {
 
     private boolean isDigit(char c) {
         return c >= '0' && c <='9';
+    }
+
+    private boolean isAlpha(char c) {
+        return  (c >='a' && c <= 'z') ||
+                (c >='A' && c <= 'Z') ||
+                (c == '_');
     }
 
     private boolean isAtEnd() {
