@@ -55,8 +55,26 @@ public class Lox {
         }
     }
 
+    /**
+     * Scanner error, show error at line number
+     * @param line
+     * @param message
+     */
     static void error(int line, String message) {
         report(line, "", message);
+    }
+
+    /**
+     * Parser error, no line information
+     * @param token
+     * @param message
+     */
+    static void error(Token token, String message) {
+        if (token.type == TokenType.EOF) {
+            report(token.line, " at end", message);
+        } else {
+            report(token.line, " at '" + token.lexeme + "'", message);
+        }
     }
 
     private static void report(int line, String where, String message) {

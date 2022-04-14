@@ -15,7 +15,7 @@ public class ParserTest {
 
     @Test
     public void testCase1() {
-        String source = "2+3*4";
+        String source = "4 * (1 + 3*";
         Scanner scanner = new Scanner(source);
 
         List<Token> tokens = scanner.scanTokens();

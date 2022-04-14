@@ -5,6 +5,10 @@ import java.util.List;
 import static org.example.TokenType.*;
 
 public class Parser {
+    private static class ParseError extends RuntimeException {
+
+    }
+
     private final List<Token> tokens;
     private int current = 0;
 
@@ -13,7 +17,12 @@ public class Parser {
     }
 
     public Expr parse() {
-        return expression();
+        try {
+            return expression();
+        } catch (ParseError error) {
+            System.out.println("Got parse error");
+            return null;
+        }
     }
 
     private Expr expression() {
@@ -86,21 +95,30 @@ public class Parser {
             consume(RIGHT_PARENT, "Expect ')' after expression.");
             return new Expr.Grouping(expression);
         }
-        // else handle error
-        return null;
+        // None of primary() match, throw an error
+        throw error(peek(), "Expect expression.");
+    }
+
+    private void synchronize() {
+        // TODO: implement, at the end of chapter 6
     }
 
     /**
-     * My implementation
+     * Enter panic mode
      * @param type
      * @param msg
      */
-    private void consume(TokenType type, String msg) {
+    private Token consume(TokenType type, String msg) {
         if (check(type)) {
-            advance();
-            return;
+            return advance();
         }
-        Lox.error(-1, msg);
+
+        throw error(peek(), msg);
+    }
+
+    private ParseError error(Token token, String msg) {
+        Lox.error(token, msg);
+        return new ParseError();
     }
 
 
