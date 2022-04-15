@@ -13,12 +13,21 @@ public class GenerateAst {
         }
         String outputDir = args[0];
         List<String> list = Arrays.asList(
+                "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
-                "Unary    : Token operator, Expr right"
+                "Unary    : Token operator, Expr right",
+                "Variable : Token name"
         );
         defineAst(outputDir, "Expr", list);
+
+        // Statements and Expressions are disjoint
+        defineAst(outputDir, "Stmt", Arrays.asList(
+                "Expression : Expr expression",
+                "Print      : Expr expression",
+                "Var        : Token name, Expr initializer"
+        ));
     }
 
     private static void defineAst(

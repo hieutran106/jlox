@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.TokenType.*;
@@ -16,13 +17,52 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError error) {
-            System.out.println("Got parse error");
-            return null;
+    public List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(declaration());
         }
+        return statements;
+    }
+
+    private Stmt declaration() {
+       try {
+           if (match(VAR)) {
+               return varDeclaration();
+           }
+           return statement();
+       } catch (ParseError error) {
+           synchronize();
+           return null;
+       }
+    }
+
+    private Stmt varDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect variable name.");
+
+        Expr initializer = null;
+        if (match(EQUAL)) {
+            initializer = expression();
+        }
+        consume(SEMICOLON, "Expect ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
+    }
+
+    private Stmt statement() {
+        if (match(PRINT)) return printStatement();
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Expression(expr);
     }
 
     private Expr expression() {
@@ -88,6 +128,11 @@ public class Parser {
         if (match(NUMBER, STRING)) {
             Token token = previous();
             return new Expr.Literal(token.literal);
+        }
+
+        if (match(IDENTIFIER)) {
+            Token token = previous();
+            return new Expr.Variable(token);
         }
 
         if (match(LEFT_PARENT)) {

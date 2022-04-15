@@ -11,7 +11,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Lox {
+    private static final Interpreter interpreter = new Interpreter();
     static boolean hadError = false;
+    static boolean hadRuntimeError = false;
+
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
             System.out.println("Usage: jlox [script]");
@@ -28,6 +31,13 @@ public class Lox {
         run(new String(bytes, Charset.defaultCharset()));
         // Indicate an error in the exit code.
         if (hadError) System.exit(65);
+
+        // If the user is running a Lox script from a file and a runtime error occurs,
+        // we set an exit code when the process quits to let the calling process know.
+
+        // If the user is running the REPL, we don’t care about tracking runtime errors.
+        // After they are reported, we simply loop around and let them input new code and keep going.
+        if (hadRuntimeError) System.exit(70);
     }
 
     private static void runPrompt() throws IOException {
@@ -50,9 +60,19 @@ public class Lox {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
-        for (Token token: tokens) {
-            System.out.println(token);
-        }
+        Parser parser = new Parser(tokens);
+
+        List<Stmt> statements = parser.parse();
+
+        if (hadError) return;
+
+        interpreter.interpret(statements);
+
+    }
+
+    static void runtimeError(RuntimeError error) {
+        System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
+        hadRuntimeError = true;
     }
 
     /**
