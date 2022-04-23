@@ -50,7 +50,19 @@ public class Parser {
 
     private Stmt statement() {
         if (match(PRINT)) return printStatement();
+        // parse block
+        if (match(LEFT_BRACE)) return new Stmt.Block(block());
         return expressionStatement();
+    }
+
+    private List<Stmt> block() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!check(RIGHT_BRACE) && !isAtEnd()) {
+            Stmt stmt = declaration();
+            statements.add(stmt);
+        }
+        consume(RIGHT_BRACE, "Expect '}' after block.");
+        return statements;
     }
 
     private Stmt printStatement() {
@@ -66,7 +78,25 @@ public class Parser {
     }
 
     private Expr expression() {
-        return equality();
+        return assignment();
+    }
+
+    private Expr assignment() {
+        Expr expr = equality();
+
+        if (match(EQUAL)) {
+            Token equals = previous();
+            Expr value = assignment();
+
+            if (expr instanceof Expr.Variable) {
+                Token name = ((Expr.Variable) expr).name;
+                Expr.Assign assignmentExpr = new Expr.Assign(name, value);
+                return assignmentExpr;
+            }
+
+            error(equals, "Invalid assignment target.");
+        }
+        return expr;
     }
 
     private Expr equality() {
@@ -145,7 +175,25 @@ public class Parser {
     }
 
     private void synchronize() {
-        // TODO: implement, at the end of chapter 6
+        advance();
+
+        while (!isAtEnd()) {
+            if (previous().type == SEMICOLON) return;
+
+            switch (peek().type) {
+                case CLASS:
+                case FUN:
+                case VAR:
+                case FOR:
+                case IF:
+                case WHILE:
+                case PRINT:
+                case RETURN:
+                    return;
+            }
+
+            advance();
+        }
     }
 
     /**

@@ -15,7 +15,7 @@ public class ParserTest {
 
     @Test
     public void testCase1() {
-        String source = "5 == 5";
+        String source = "var x = \"global\"; { var a = 1;}";
         Scanner scanner = new Scanner(source);
 
         List<Token> tokens = scanner.scanTokens();
