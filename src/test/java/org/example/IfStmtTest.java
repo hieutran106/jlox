@@ -4,17 +4,15 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class WhileLoopTest {
+public class IfStmtTest {
     @Test
     public void testCase1() throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("whileLoop.lox");
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ifStatement.lox");
         String source = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         Scanner scanner = new Scanner(source);
 
@@ -26,9 +24,8 @@ public class WhileLoopTest {
         interpreter.interpret(stmts);
 
         Environment global = interpreter.getEnvironment();
-        Object x = global.getValues().get("x");
-        Assert.assertTrue(x instanceof Double);
-        Assert.assertEquals(((Double) x).doubleValue(), 100, 0.0001);
+        Object foo = global.getValues().get("foo");
+        Assert.assertTrue(foo instanceof Boolean);
+        Assert.assertFalse((Boolean) foo);
     }
-
 }

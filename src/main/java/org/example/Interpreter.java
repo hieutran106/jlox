@@ -6,6 +6,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private Environment environment = new Environment();
 
+    public Environment getEnvironment() {
+        return environment;
+    }
+
     public void interpret(List<Stmt> statements) {
         try {
             for (Stmt statement: statements) {
@@ -168,7 +172,6 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitBlockStmt(Stmt.Block stmt) {
-        System.out.println("Create new environment with previous:" + environment);
         executeBlock(stmt.statements, new Environment(environment));
         return null;
     }

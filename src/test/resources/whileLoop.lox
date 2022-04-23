@@ -1,5 +1,5 @@
 var x = 1;
-while (x < 2) {
+while (x < 100) {
     x = x + 1;
 }
-print "end";
+x;

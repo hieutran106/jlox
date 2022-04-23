@@ -15,6 +15,10 @@ public class Environment {
         this.enclosing = enclosing;
     }
 
+    public Map<String, Object> getValues() {
+        return values;
+    }
+
     public void define(String name, Object value) {
         values.put(name, value);
     }

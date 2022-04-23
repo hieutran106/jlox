@@ -1,0 +1,3 @@
+var foo = true;
+if (foo) foo = false;
+foo;
