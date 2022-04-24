@@ -28,8 +28,14 @@ public class LoxFunction implements LoxCallable {
             environment.define(name, value);
         }
 
-        interpreter.executeBlock(declaration.body, environment);
+        try {
+            interpreter.executeBlock(declaration.body, environment);
+        } catch (Return returnValue) {
+            return returnValue.value;
+        }
+
         return null;
+
     }
 
     @Override

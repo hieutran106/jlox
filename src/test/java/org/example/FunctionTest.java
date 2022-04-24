@@ -29,8 +29,8 @@ public class FunctionTest {
     }
 
     @Test
-    public void testCase2() throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("function2.lox");
+    public void testCase3() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("function3.lox");
         String source = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         Scanner scanner = new Scanner(source);
 
@@ -40,11 +40,5 @@ public class FunctionTest {
 
         Interpreter interpreter = new Interpreter();
         interpreter.interpret(stmts);
-
-        LoxFunction function = (LoxFunction) interpreter.getEnvironment().getValues().get("sayHi");
-
-        Stmt.Function declaration = function.getDeclaration();
-        Assert.assertEquals(declaration.name.lexeme, "sayHi");
-        Assert.assertEquals(declaration.params.get(0).lexeme, "first");
     }
 }
