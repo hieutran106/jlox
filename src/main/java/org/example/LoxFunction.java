@@ -10,6 +10,10 @@ public class LoxFunction implements LoxCallable {
         this.declaration = declaration;
     }
 
+    public Stmt.Function getDeclaration() {
+        return declaration;
+    }
+
     @Override
     public int arity() {
         return declaration.params.size();

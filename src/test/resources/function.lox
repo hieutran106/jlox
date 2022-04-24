@@ -1,5 +1,10 @@
 fun add(a, b) {
     print a + b;
+
+    fun minus(c,d) {
+        print c - d;
+    }
+    minus(100, 50);
 }
 print add;
 add(1, 2);
