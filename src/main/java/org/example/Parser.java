@@ -28,6 +28,7 @@ public class Parser {
 
     private Stmt declaration() {
        try {
+           if (match(FUN)) return function("function");
            if (match(VAR)) {
                return varDeclaration();
            }
@@ -36,6 +37,25 @@ public class Parser {
            synchronize();
            return null;
        }
+    }
+
+    private Stmt function(String kind) {
+        Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
+        consume(LEFT_PARENT, "Expect '(' after " + kind + " name.");
+        List<Token> parameters = new ArrayList<>();
+        if (!check(RIGHT_PARENT)) {
+            do {
+                if (parameters.size() >= 255) {
+                    error(peek(), "Can't have more than 255 parameters.");
+                }
+                Token param = consume(IDENTIFIER, "Expect parameter name.");
+                parameters.add(param);
+            } while (match(COMMA));
+        }
+        consume(RIGHT_PARENT, "Expect ')' after parameters.");
+        consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+        List<Stmt> body = block();
+        return new Stmt.Function(name, parameters, body);
     }
 
     private Stmt varDeclaration() {
@@ -242,8 +262,39 @@ public class Parser {
             Expr result = new Expr.Unary(operator, right);
             return result;
         }
-        return primary();
+        return call();
     }
+
+    private Expr call() {
+        Expr expr  = primary();
+        while (true) {
+            // allow match a series of calls like fn(1)(2)(3)
+            if (match(LEFT_PARENT)) {
+                expr = finishCall(expr);
+            } else {
+                break;
+            }
+        }
+        return expr;
+    }
+
+    private Expr finishCall(Expr callee) {
+        List<Expr> arguments = new ArrayList<>();
+        if (!check(RIGHT_PARENT)) {
+            do {
+                // Maximum argument counts
+                if (arguments.size() >= 255) {
+                    // Note that the code here reports an error if it encounters too many arguments, but it doesn’t throw the error.
+                    error(peek(), "Can't have more than 255 arguments.");
+                }
+                arguments.add(expression());
+            } while (match(COMMA));
+        }
+
+        Token paren = consume(RIGHT_PARENT, "Expect ')' after arguments.");
+        return new Expr.Call(callee, paren, arguments);
+    }
+
 
     private Expr primary() {
         if (match(TRUE)) return new Expr.Literal(true);
