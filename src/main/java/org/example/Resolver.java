@@ -62,6 +62,11 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         }
 
         Map<String, Boolean> scope = scopes.peek();
+        if (scope.containsKey(name.lexeme)) {
+            Lox.error(name,
+                    "Already a variable with this name in this scope.");
+        }
+
         // The value associated with a key in the scope map represents
         // whether or not we have finished resolving that variable’s initializer.
         scope.put(name.lexeme, false);
@@ -78,7 +83,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
 
 
-    private void resolve(List<Stmt> statements) {
+    public void resolve(List<Stmt> statements) {
         for (Stmt statement: statements) {
             resolve(statement);
         }
