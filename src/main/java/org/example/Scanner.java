@@ -138,18 +138,17 @@ class Scanner {
     }
 
     private void identifier() {
-        while (isAlpha(peek())) {
+        while (isAlpha(peek()) || isDigit(peek())) {
             advance();
         }
 
-        String lexeme = source.substring(start, current);
+        String lexeme = source.substring(start, this.current);
         if (keywords.containsKey(lexeme)) {
             addToken(keywords.get(lexeme));
             return;
         }
 
         addToken(IDENTIFIER);
-
     }
 
     private void number() {
