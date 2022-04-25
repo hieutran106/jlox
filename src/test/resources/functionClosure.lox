@@ -1,0 +1,16 @@
+fun makeCounter() {
+  var i = 0;
+  fun increase() {
+    i = i + 1;
+    return i;
+  }
+
+  return increase;
+}
+
+var counter = makeCounter();
+var x = counter();
+x = counter();
+
+var ola = makeCounter();
+var y = ola();
