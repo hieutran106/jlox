@@ -24,10 +24,24 @@ public class ResolutionTest {
 
         Resolver resolver = new Resolver(interpreter);
         resolver.resolve(stmts);
+        Assert.assertTrue(Lox.hadError);
 
-//        interpreter.interpret(stmts);
+    }
 
-//        System.out.println(Lox.hadError);
+    @Test
+    public void testCase2() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("resolution2.lox");
+        String source = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        Scanner scanner = new Scanner(source);
+
+        List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        List<Stmt> stmts = parser.parse();
+
+        Interpreter interpreter = new Interpreter();
+
+        Resolver resolver = new Resolver(interpreter);
+        resolver.resolve(stmts);
         Assert.assertTrue(Lox.hadError);
 
     }
