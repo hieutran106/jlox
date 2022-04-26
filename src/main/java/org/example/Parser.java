@@ -297,6 +297,10 @@ public class Parser {
             // allow match a series of calls like fn(1)(2)(3)
             if (match(LEFT_PARENT)) {
                 expr = finishCall(expr);
+            } else if (match(DOT)) {
+                Token name = consume(IDENTIFIER,
+                        "Expect property name after '.'.");
+                expr = new Expr.Get(expr, name);
             } else {
                 break;
             }
