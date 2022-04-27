@@ -1,0 +1,6 @@
+class Person {
+    sayHi() {
+        print "Hello, World!";
+    }
+}
+Person().sayHi();
