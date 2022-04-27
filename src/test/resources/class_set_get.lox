@@ -1,0 +1,5 @@
+class Person {}
+var x= Person();
+x.name = "John";
+var y = x.name;
+print y;

@@ -18,6 +18,11 @@ public class LoxInstance {
         throw new RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
     }
 
+    public void set(Token name, Object value) {
+        // Lox allows freely creating new fields on instances
+        fields.put(name.lexeme, value);
+    }
+
     @Override
     public String toString() {
         return klass.name + " instance";
