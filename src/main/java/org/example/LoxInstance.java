@@ -18,7 +18,7 @@ public class LoxInstance {
 
         // Although methods are owned by the class, they are still accessed through instances of that class.
         LoxFunction method = klass.findMethod(name.lexeme);
-        if (method != null) return method;
+        if (method != null) return method.bind(this);
 
         throw new RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
     }

@@ -342,6 +342,10 @@ public class Parser {
             return new Expr.Literal(token.literal);
         }
 
+        if (match(THIS)) {
+            return new Expr.This(previous());
+        }
+
         if (match(IDENTIFIER)) {
             Token token = previous();
             return new Expr.Variable(token);
